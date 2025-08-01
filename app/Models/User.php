@@ -27,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'address', 'city', 'postal_code', 'phone', 'country', 'provider_id', 'email_verified_at', 'verification_code'
+        'name', 'email', 'password', 'address', 'city', 'postal_code', 'phone', 'country', 'provider_id', 'email_verified_at', 'verification_code', 'tenant_id', 'is_landlord'
     ];
 
     /**
@@ -167,5 +167,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function preorders()
     {
         return $this->hasMany(Preorder::class);
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function ownedTenants()
+    {
+        return $this->hasMany(Tenant::class, 'created_by');
+    }
+
+    public function isLandlord()
+    {
+        return $this->is_landlord === true;
+    }
+
+    public function isTenantUser()
+    {
+        return !$this->isLandlord() && $this->tenant_id;
     }
 }
